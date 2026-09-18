@@ -18,13 +18,13 @@ Arduino library to measure cumulative series of run times.
 
 **Experimental**
 
-This library is used to add up one or more periods of time.
+This library is used to add up one or more periods of "on" time.
 This sum is counted in seconds.
 The goal of the library is e.g. to track the runtime (uptime or elapsed time)
-of a device over longer periods of time.
+of a device or process over longer periods of time.
 This runtime can be requested in seconds, minutes, hours or days.
 Besides the runtime the library also counts how often 
-the clock (== device) has started.
+the counter (== device) has started.
 Finally the library can report the average runtime in seconds, 
 minutes, hours or days.
 
@@ -35,21 +35,45 @@ updated at least once per 49 days when running continuously.
 This must be done by calling **update()**.
 When the clock is stopped one does not need to update every 49 days.
 
+Feedback as always is welcome.
+
+
+### Operational time
+
+The library does not track the "operational time" or total time. 
+Therefore it is not possible to calculate the runtime as a percentage
+of the total time. This would allow to make statements like 
+"Device has run 1459 hours in the last 100 days = 60.79%".
+
+There are ideas to add this in the future. 
+
+
+### Accuracy
+
 The library does truncate the **millis()** internally when converting 
 to seconds, however it tracks the milliseconds remaining to add later.
 This improves the accuracy, especially when the individual runs are 
 relative short.
 
-The library does not track the "operational time" (yet). 
-Therefore it is not possible to calculate the runtime as a percentage
-of the total time.
+Note this library is only as accurate as the underlying millis() is.
+The library does not support compensation for this drift.
+As the drift may vary over time this is not a trivial problem.
 
-Note: this library is only as accurate as the underlying millis() is.
-The library does not support compensation for drift.
+A first order compensation may be a **drift factor** which compensates 
+for the average deviation over time. This can be multiplying the numbers 
+with a configurable float e.g. 1.015 or 0.99973.
 
-Note: the library does not keep the counting persistent over reboots.
+Support for the drift factor in the library might be added in the future.
 
-Feedback as always is welcome.
+With the use of NTP or an RTC there are more options to tackle this.
+For now these are out of the scope of the library.
+
+
+### Persistence
+
+The library does not store its data in an NVRAM so it does not keep 
+the counting persistent over reboots.
+For now the user is responsible to "backup" the counter.
 
 
 ### Related
@@ -85,25 +109,32 @@ On Arduino UNO R3.
 it is not started again. One must use reset() or stop() first.
 - **void stop()** stops the internal counting and adds the last run to the
 internal runtime counter. 
-- **void update()** updates the internal counting.
+- **void update()** updates the internal counting. Must be called at least
+once per 49 days, typically once per day.
 - **void reset(uint32_t startValue = 0)** resets the internal counters to zero.
-Optional one can set a number of start seconds
-- **bool isRunning()** returns true is counting is running.
+Optional one can set a number of start seconds.
+- **bool isRunning()** returns true is the counting is running.
 
 ### Measurement
 
 - **uint32_t seconds()** returns the seconds runtime, includes the active run.
 - **float minutes()** wrapper around seconds, partial minutes is in decimal format.
+E.g. 15 minutes 25 seconds ==> 15.42 (rounded).
 - **float hours()** wrapper around seconds, partial hours is in decimal format.
 - **float days()** wrapper around seconds, partial days is in decimal format.
 - **uint32_t runCount()** returns the number of runs (== starts).
+Returns zero after reset() and no run started yet.
 
 ### Statistics
 
 - **float averageSeconds()** returns seconds / runCount.
+When runCount == 0, it returns 0.
 - **float averageMinutes()** returns minutes / runCount.
+When runCount == 0, it returns 0.
 - **float averageHours()** returns hours / runCount.
+When runCount == 0, it returns 0.
 - **float averageDays()** returns days / runCount.
+When runCount == 0, it returns 0.
 
 
 ### PrintTo
@@ -123,27 +154,30 @@ Serial.println(rt);
 #### Must
 
 - improve documentation
-- test
 
 #### Should
+
+- investigate operational time.
+  - extended class as more data needs tracking?
+  - tracking "not running" time would be sufficient.
+  - add runtime as percentage of total time
+- investigate drift support
+  - drift depends on runtime, interrupts and more?
+  - driftCorrect(ms) - call daily / hourly?
+  - setDriftFactor(float) - first order compensation
+  - API?
+
+#### Could
 
 - investigate persistence over reboot support.
   - external storage?
   - watchdog persistence?
-- investigate operational time.
-  - runtime percentage
-- investigate drift support
-  - drift depends on runtime, interrupts and more?
-  - driftCorrect(ms) - call daily / hourly?
-  - setDriftFactor(float) - 
-
-#### Could
-
+  - FRAM snapshots? user responsibility?
 - add examples
 - add unit tests (if possible)
 - redefine printTo() layout?
 - access to remainder?
-
+- track the largest run, the shortest? to get a range?
 
 #### Wont
 

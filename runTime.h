@@ -96,6 +96,8 @@ public:
     return _runCount;
   }
 
+
+  //  STATISTICS
   float averageSeconds()
   {
     if (_runCount == 0) return 0;
@@ -124,7 +126,7 @@ public:
   //  layout could be DDDD:HH:MM:SS
   size_t printTo(Print& p) const override
   {
-    uint32_t ti = this->seconds();
+    uint32_t ti = seconds();
     size_t n = p.print(ti);
     n += p.print(" s.");
     return n;
