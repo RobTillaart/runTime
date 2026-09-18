@@ -174,7 +174,7 @@ Serial.println(rt);
   - watchdog persistence?
   - FRAM snapshots? user responsibility?
 - add examples
-- add unit tests (if possible)
+- extend unit tests (if possible)
 - redefine printTo() layout?
 - access to remainder?
 - track the largest run, the shortest? to get a range?

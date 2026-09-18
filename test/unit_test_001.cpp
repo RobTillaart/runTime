@@ -1,7 +1,7 @@
 //
 //    FILE: unit_test_001.cpp
 //  AUTHOR: Rob Tillaart
-//    DATE: 2026-xx-xx
+//    DATE: 2026-09-17
 // PURPOSE: unit tests for the runTime library
 //     URL: https://github.com/RobTillaart/runTime
 //          https://github.com/Arduino-CI/arduino_ci/blob/master/REFERENCE.md
@@ -46,7 +46,55 @@ unittest(test_constants)
 
 unittest(test_constructor)
 {
-  runTime obj;
+  runTime rt;
+  assertFalse(rt.isRunning());
+  assertEqual(0, rt.seconds());
+  assertEqual(0, rt.runCount());
+  assertEqual(0, rt.averageSeconds());
+}
+
+
+unittest(test_start_stop)
+{
+  runTime rt;
+  assertFalse(rt.isRunning());
+  assertEqual(0, rt.seconds());
+  assertEqual(0, rt.runCount());
+
+  rt.start();
+  assertTrue(rt.isRunning());
+  assertEqual(0, rt.seconds());  //  unit test does no millis()
+  assertEqual(1, rt.runCount());
+
+  rt.stop();
+  assertFalse(rt.isRunning());
+  assertEqual(0, rt.seconds());
+  assertEqual(1, rt.runCount());
+}
+
+
+
+unittest(test_start_stop)
+{
+  runTime rt;
+  assertFalse(rt.isRunning());
+  assertEqual(0, rt.seconds());
+  assertEqual(0, rt.runCount());
+
+  rt.start();
+  assertTrue(rt.isRunning());
+  assertEqual(0, rt.seconds());  //  unit test does no millis()
+  assertEqual(1, rt.runCount());
+
+  rt.reset();
+  assertFalse(rt.isRunning());
+  assertEqual(0, rt.seconds());
+  assertEqual(0, rt.runCount());
+
+  rt.reset(123);
+  assertFalse(rt.isRunning());
+  assertEqual(123, rt.seconds());
+  assertEqual(0, rt.runCount());
 }
 
 
