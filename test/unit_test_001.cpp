@@ -74,7 +74,7 @@ unittest(test_start_stop)
 
 
 
-unittest(test_start_stop)
+unittest(test_start_reset)
 {
   runTime rt;
   assertFalse(rt.isRunning());
