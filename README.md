@@ -18,10 +18,11 @@ Arduino library to measure cumulative series of run times.
 
 **Experimental**
 
-This library is used to add up one or more periods of "on" time.
+This library is used to add up one or more runs of "on" time.
 This sum is counted in seconds.
 The goal of the library is e.g. to track the runtime (uptime or elapsed time)
-of a device or process over longer periods of time.
+of a device or a process over a long time.
+In this period the device can be switched on and off multiple times. 
 This runtime can be requested in seconds, minutes, hours or days.
 Besides the runtime the library also counts how often 
 the counter (== device) has started.
@@ -46,6 +47,24 @@ of the total time. This would allow to make statements like
 "Device has run 1459 hours in the last 100 days = 60.79%".
 
 There are ideas to add this in the future. 
+
+
+### Picture
+
+To visualize the concept, a minimalistic picture
+
+```
+   0      10               30        40        50          70
+---|------|................|---------|.........|-----------|------
+   T0     START            STOP      START     STOP       T1
+
+runtime = sum(stop - start) = 30
+runCount = 2
+
+//  not supported (yet)
+total time = T1 - T0  = 70
+percentage = 30/70*100% = 42.86%
+```
 
 
 ### Accuracy
